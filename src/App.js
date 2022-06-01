@@ -1,11 +1,12 @@
-import logo from './logo.svg';
 import './App.css';
+import { BrowserRouter } from "react-router-dom";
+import Routes from 'router/routes';
 
 function App() {
   return (
-    <div>
-      <h1 className='font-bold mt-10'>Coba</h1>
-    </div>
+    <BrowserRouter>
+      <Routes/>
+    </BrowserRouter>
   );
 }
 
