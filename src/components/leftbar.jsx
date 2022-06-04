@@ -1,16 +1,19 @@
 import React from 'react'
 import { Link, useLocation } from 'react-router-dom'
+import { HomeIcon, BookmarkIcon, InformationCircleIcon } from '@heroicons/react/outline'
 
 export default function Leftbar() {
   let url = useLocation()
   const menu = [
     {
       url: "/",
-      title: "Home"
+      title: "Home",
+      icon: <HomeIcon className="h-5 w-5 text-blue-500" />
     },
     {
       url: "/bookmark",
-      title: "Bookmark"
+      title: "Bookmark",
+      icon: <BookmarkIcon className="h-5 w-5 text-blue-500" />
     }
   ]
   console.log(url.pathname)
@@ -21,8 +24,8 @@ export default function Leftbar() {
         <div className="flex flex-col gap-4 justify-center items-center">
           <div className="w-40 h-40 bg-gray-300 rounded-full"></div>
           <div className='flex flex-col gap-1 justify-center items-center'>
-          <p className='font-bold text-lg'>John Doe</p>
-          <p className='text-sm'>Frontend Developer</p>
+            <p className='font-bold text-lg'>John Doe</p>
+            <p className='text-sm'>Frontend Developer</p>
           </div>
         </div>
         <hr />
@@ -31,7 +34,7 @@ export default function Leftbar() {
             return (
               <Link to={val.url} key={idx} className={`btn justify-start w-full ${url.pathname === val.url ? "btn-accent" : "btn-ghost"}`}>
                 <div className="flex gap-4 items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
+                  {val.icon}
                   {val.title}
                 </div>
 
@@ -40,8 +43,8 @@ export default function Leftbar() {
           })
         }
         <label for="my-modal-3" class="btn btn-ghost justify-start w-full modal-button">
-        <div className="flex gap-4 items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
+          <div className="flex gap-4 items-center">
+            <InformationCircleIcon className="h-5 w-5 text-blue-500" />
             Tentang
           </div>
         </label>

@@ -1,6 +1,7 @@
 {
   "name": "sejutacita-b3k3n",
   "version": "0.1.0",
+  "proxy": "https://asia-southeast2-sejutacita-app.cloudfunctions.net/",
   "private": true,
   "dependencies": {
     "@heroicons/react": "^1.0.6",
@@ -9,7 +10,9 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^0.27.2",
     "daisyui": "^2.15.2",
+    "dotenv": "^16.0.1",
     "framer-motion": "^6.3.6",
+    "local-cors-proxy": "^1.1.0",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
     "react-router-dom": "^6.3.0",
@@ -20,7 +23,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "proxy": "lcp --proxyUrl https://asia-southeast2-sejutacita-app.cloudfunctions.net/"
   },
   "eslintConfig": {
     "extends": [
