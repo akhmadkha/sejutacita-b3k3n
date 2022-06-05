@@ -2,7 +2,8 @@ import { PlayIcon } from '@heroicons/react/outline'
 import React from 'react'
 import BottomToTopBox from './_animations/bottom-to-top-box'
 
-export function Player() {
+export function Player(props) {
+    const {duration} = props
     return (
         <>
             <div class="bg-white border-slate-100 dark:bg-slate-800 dark:border-slate-500 border-b rounded-t-xl p-4 pb-6 sm:p-10 sm:pb-8 lg:p-6 xl:p-10 xl:pb-8 space-y-6 sm:space-y-8 lg:space-y-6 xl:space-y-8">
@@ -18,7 +19,7 @@ export function Player() {
                     </div>
                     <div class="flex justify-between text-sm leading-6 font-medium tabular-nums">
                         <div class="text-cyan-500 dark:text-slate-100">00:00</div>
-                        <div class="text-slate-500 dark:text-slate-400">75:50</div>
+                        <div class="text-slate-500 dark:text-slate-400">{duration.toHHMMSS()}</div>
                     </div>
                 </div>
             </div>

@@ -22,7 +22,11 @@ export default function Leftbar() {
 
       <div className="w-full gap-6 flex flex-col">
         <div className="flex flex-col gap-4 justify-center items-center">
-          <div className="w-40 h-40 bg-gray-300 rounded-full"></div>
+          <div class="avatar">
+            <div class="w-36 rounded-full">
+              <img src="https://api.lorem.space/image/face?hash=92310" />
+            </div>
+          </div>
           <div className='flex flex-col gap-1 justify-center items-center'>
             <p className='font-bold text-lg'>John Doe</p>
             <p className='text-sm'>Frontend Developer</p>
@@ -53,7 +57,7 @@ export default function Leftbar() {
           <div class="modal-box relative">
             <label for="my-modal-3" class="btn btn-sm btn-circle absolute right-2 top-2">✕</label>
             <h3 class="text-lg font-bold">Tentang aplikasi</h3>
-            <p class="py-4">You've been selected for a chance to get one year of subscription to use Wikipedia for free!</p>
+            <p class="py-4">B3k3n</p>
           </div>
         </div>
       </div>

@@ -58,7 +58,7 @@ export default function DetailBook(props) {
 
   return (
     <div className='w-full'>
-      <div className="flex w-full">
+      <div className="flex flex-col items-center lg:items-start lg:flex-row w-full">
         <div className="w-2/4 px-10">
           <div className="w-full bg-gray-400 rounded-xl p-10">
             <img src={cover_url ?? ""} />
@@ -100,7 +100,7 @@ export default function DetailBook(props) {
           </BounceBox>
           <BounceBox delay={0.35}>
             <div id="playerId" ref={playerRef}>
-              <Player />
+              <Player duration={audio_length.toString()} />
             </div>
           </BounceBox>
 
