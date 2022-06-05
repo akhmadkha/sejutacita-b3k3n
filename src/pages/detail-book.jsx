@@ -1,56 +1,102 @@
-import { Player, PlayerBottom } from 'components/player'
+import { BookmarkIcon } from '@heroicons/react/outline'
+import { BookmarkIcon as BookmarkIconSolid } from '@heroicons/react/solid'
+import { Player } from 'components/player'
 import BounceBox from 'components/_animations/bounce-box'
 import React, { useRef, useEffect, useState } from 'react'
 
-export default function DetailBook() {
+class CheckLSBook {
+  constructor(id) {
+    this.id = id
+  }
+  existingBook() {
+    let existing = localStorage.getItem('bookmarks') ?? "[]"
+    let parsedExisting = JSON.parse(existing)
+
+    return parsedExisting
+  }
+  check() {
+    let existing = localStorage.getItem('bookmarks') ?? "[]"
+    let parsedExisting = JSON.parse(existing)
+    const checkExisting = Boolean(parsedExisting.find((x) => {
+      return x.id === this.id
+    }))
+    return checkExisting
+  }
+}
+
+export default function DetailBook(props) {
   const playerRef = useRef(null)
-  const [showBottomPlayer, setshowBottomPlayer] = useState(false)
+  const { id, title, authors, cover_url, description, sections, audio_length } = props.data
+  const {bookmarked} = props
+  const [isBookmarked, setisBookmarked] = useState(false)
 
   useEffect(() => {
-    document.addEventListener('scroll', trackScroll)
-
+    let classBook = new CheckLSBook(id)
+    if (classBook.check()) setisBookmarked(true)
     return () => {
-      document.removeEventListener('scroll', trackScroll)
     }
   }, [])
 
-  const trackScroll = () => {
-    let element = document.getElementById('playerId')
-    // console.log(element.getBoundingClientRect().top)
-    if (element.getBoundingClientRect().bottom < 0) {
-      if (!showBottomPlayer) {
-        setshowBottomPlayer(true)
-      }
-    } else {
-      setshowBottomPlayer(false)
-    }
-  }
+  function switchBookmark() {
+    let classBook = new CheckLSBook(id)
+    let store = props.data
 
-  console.log(showBottomPlayer)
+    if (classBook.check()) {
+      let removedBook = classBook.existingBook().filter((x) => {
+        return x.id !== id
+      })
+      localStorage.setItem('bookmarks', JSON.stringify(removedBook))
+      setisBookmarked(false)
+      bookmarked(false)
+    } else {
+      localStorage.setItem('bookmarks', JSON.stringify([...classBook.existingBook(), store]))
+      setisBookmarked(true)
+      bookmarked(true)
+    }
+
+  }
 
   return (
     <div className='w-full'>
       <div className="flex w-full">
         <div className="w-2/4 px-10">
-          <div className="w-full bg-gray-400 rounded-xl p-10"></div>
+          <div className="w-full bg-gray-400 rounded-xl p-10">
+            <img src={cover_url ?? ""} />
+          </div>
         </div>
         <div className="w-2/4 flex flex-col gap-4">
           <div className="flex justify-start">
-            <button class="btn btn-ghost gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
-              Button
+            <button onClick={() => switchBookmark()} class="btn btn-ghost gap-2">
+              {
+                isBookmarked ?
+                  <>
+                    <BookmarkIconSolid className="h-5 w-5 text-blue-500" />
+                    Hapus dari Bookmark
+                  </>
+                  :
+                  <>
+                    <BookmarkIcon className="h-5 w-5 text-blue-500" />
+                    Tambah ke Bookmark
+                  </>
+              }
             </button>
           </div>
           <BounceBox delay={0.1}>
             <h1 className="text-4xl font-bold">
-              The Intelligent Investor
+              {title ?? ""}
             </h1>
           </BounceBox>
           <BounceBox delay={0.2}>
-            <p>Benjamin Graham</p>
+            {
+              authors?.map((val, idx) => {
+                return (
+                  <p key={idx}>{val}</p>
+                )
+              })
+            }
           </BounceBox>
           <BounceBox delay={0.3}>
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime mollitia, molestiae quas vel sint commodi repudiandae consequuntur vo</p>
+            <p>{description ?? ""}</p>
           </BounceBox>
           <BounceBox delay={0.35}>
             <div id="playerId" ref={playerRef}>
@@ -60,13 +106,6 @@ export default function DetailBook() {
 
         </div>
       </div>
-      <div className="flex items-center justify-center">
-        {
-          showBottomPlayer ? <div className="fixed mx-auto bottom-4 z-50">
-            <PlayerBottom />
-          </div> : null
-        }
-      </div>
 
       <div className='px-10 mt-20'>
         <BounceBox delay={0.4}>
@@ -75,138 +114,26 @@ export default function DetailBook() {
         </BounceBox>
 
         <div className="flex flex-col gap-4">
-          <BounceBox delay={0.5}>
-            <div class="collapse">
-              <input type="checkbox" class="peer" />
-              <div class="collapse-title bg-primary text-primary-content peer-checked:bg-secondary peer-checked:text-secondary-content">
-                Click me to show/hide content
-              </div>
-              <div class="collapse-content bg-primary text-primary-content peer-checked:bg-secondary peer-checked:text-secondary-content">
-                <p>tabindex="0" attribute is necessary to make the div focusable</p>
-              </div>
-            </div>
-          </BounceBox>
-          <BounceBox delay={0.5}>
-            <div class="collapse">
-              <input type="checkbox" class="peer" />
-              <div class="collapse-title bg-primary text-primary-content peer-checked:bg-secondary peer-checked:text-secondary-content">
-                Click me to show/hide content
-              </div>
-              <div class="collapse-content bg-primary text-primary-content peer-checked:bg-secondary peer-checked:text-secondary-content">
-                <p>tabindex="0" attribute is necessary to make the div focusable</p>
-              </div>
-            </div>
-          </BounceBox>
-          <BounceBox delay={0.5}>
-            <div class="collapse">
-              <input type="checkbox" class="peer" />
-              <div class="collapse-title bg-primary text-primary-content peer-checked:bg-secondary peer-checked:text-secondary-content">
-                Click me to show/hide content
-              </div>
-              <div class="collapse-content bg-primary text-primary-content peer-checked:bg-secondary peer-checked:text-secondary-content">
-                <p>tabindex="0" attribute is necessary to make the div focusable</p>
-              </div>
-            </div>
-          </BounceBox>
-          <BounceBox delay={0.5}>
-            <div class="collapse">
-              <input type="checkbox" class="peer" />
-              <div class="collapse-title bg-primary text-primary-content peer-checked:bg-secondary peer-checked:text-secondary-content">
-                Click me to show/hide content
-              </div>
-              <div class="collapse-content bg-primary text-primary-content peer-checked:bg-secondary peer-checked:text-secondary-content">
-                <p>tabindex="0" attribute is necessary to make the div focusable</p>
-              </div>
-            </div>
-          </BounceBox>
-          <BounceBox delay={0.5}>
-            <div class="collapse">
-              <input type="checkbox" class="peer" />
-              <div class="collapse-title bg-primary text-primary-content peer-checked:bg-secondary peer-checked:text-secondary-content">
-                Click me to show/hide content
-              </div>
-              <div class="collapse-content bg-primary text-primary-content peer-checked:bg-secondary peer-checked:text-secondary-content">
-                <p>tabindex="0" attribute is necessary to make the div focusable</p>
-              </div>
-            </div>
-          </BounceBox>
-          <BounceBox delay={0.5}>
-            <div class="collapse">
-              <input type="checkbox" class="peer" />
-              <div class="collapse-title bg-primary text-primary-content peer-checked:bg-secondary peer-checked:text-secondary-content">
-                Click me to show/hide content
-              </div>
-              <div class="collapse-content bg-primary text-primary-content peer-checked:bg-secondary peer-checked:text-secondary-content">
-                <p>tabindex="0" attribute is necessary to make the div focusable</p>
-              </div>
-            </div>
-          </BounceBox>
-          <BounceBox delay={0.5}>
-            <div class="collapse">
-              <input type="checkbox" class="peer" />
-              <div class="collapse-title bg-primary text-primary-content peer-checked:bg-secondary peer-checked:text-secondary-content">
-                Click me to show/hide content
-              </div>
-              <div class="collapse-content bg-primary text-primary-content peer-checked:bg-secondary peer-checked:text-secondary-content">
-                <p>tabindex="0" attribute is necessary to make the div focusable</p>
-              </div>
-            </div>
-          </BounceBox>
-          <BounceBox delay={0.5}>
-            <div class="collapse">
-              <input type="checkbox" class="peer" />
-              <div class="collapse-title bg-primary text-primary-content peer-checked:bg-secondary peer-checked:text-secondary-content">
-                Click me to show/hide content
-              </div>
-              <div class="collapse-content bg-primary text-primary-content peer-checked:bg-secondary peer-checked:text-secondary-content">
-                <p>tabindex="0" attribute is necessary to make the div focusable</p>
-              </div>
-            </div>
-          </BounceBox>
-          <BounceBox delay={0.5}>
-            <div class="collapse">
-              <input type="checkbox" class="peer" />
-              <div class="collapse-title bg-primary text-primary-content peer-checked:bg-secondary peer-checked:text-secondary-content">
-                Click me to show/hide content
-              </div>
-              <div class="collapse-content bg-primary text-primary-content peer-checked:bg-secondary peer-checked:text-secondary-content">
-                <p>tabindex="0" attribute is necessary to make the div focusable</p>
-              </div>
-            </div>
-          </BounceBox>
-          <BounceBox delay={0.5}>
-            <div class="collapse">
-              <input type="checkbox" class="peer" />
-              <div class="collapse-title bg-primary text-primary-content peer-checked:bg-secondary peer-checked:text-secondary-content">
-                Click me to show/hide content
-              </div>
-              <div class="collapse-content bg-primary text-primary-content peer-checked:bg-secondary peer-checked:text-secondary-content">
-                <p>tabindex="0" attribute is necessary to make the div focusable</p>
-              </div>
-            </div>
-          </BounceBox>
-          <BounceBox delay={0.5}>
-            <div class="collapse">
-              <input type="checkbox" class="peer" />
-              <div class="collapse-title bg-primary text-primary-content peer-checked:bg-secondary peer-checked:text-secondary-content">
-                Click me to show/hide content
-              </div>
-              <div class="collapse-content bg-primary text-primary-content peer-checked:bg-secondary peer-checked:text-secondary-content">
-                <p>tabindex="0" attribute is necessary to make the div focusable</p>
-              </div>
-            </div>
-          </BounceBox>
-          <BounceBox delay={0.5}>
-            <div class="collapse">
-              <input type="checkbox" class="peer" />
-              <div class="collapse-title bg-primary text-primary-content peer-checked:bg-secondary peer-checked:text-secondary-content">
-                Click me to show/hide content
-              </div>
-              <div class="collapse-content bg-primary text-primary-content peer-checked:bg-secondary peer-checked:text-secondary-content">
-                <p>tabindex="0" attribute is necessary to make the div focusable</p>
-              </div>
-            </div>
-          </BounceBox>
+          {
+            sections?.map((val, idx) => {
+              return (
+                <div key={idx}>
+                  <BounceBox delay={0.5}>
+                    <div class="collapse rounded-lg">
+                      <input type="checkbox" class="peer" />
+                      <div class="collapse-title bg-base-200 text-base-200-content peer-checked:bg-accent peer-checked:text-accent-content">
+                        {val?.title}
+                      </div>
+                      <div class="collapse-content bg-base-200 text-base-200-content peer-checked:bg-accent peer-checked:text-accent-content">
+                        <p>{val?.content}</p>
+                      </div>
+                    </div>
+                  </BounceBox>
+                </div>
+
+              )
+            })
+          }
         </div>
       </div>
     </div>

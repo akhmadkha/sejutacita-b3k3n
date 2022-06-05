@@ -14,7 +14,7 @@ function MainRoutes() {
             <Route path="/bookmark" element={<Bookmark />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/search" element={<Search />} />
-            <Route path="/book/:bookId" element={<DetailBook />} />
+            {/* <Route path="/book/:bookId" element={<DetailBook />} /> */}
         </Routes>
     )
 }

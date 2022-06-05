@@ -8,9 +8,7 @@ export default function Navbar() {
           <div>
             Navbar
           </div>
-          <div>
-            <input type="text" placeholder="Cari disini" class="input input-bordered input-accent w-full max-w-md" />
-          </div>
+          
         </div>
       </div>
     </div>

@@ -2,6 +2,8 @@ import BounceBox from 'components/_animations/bounce-box'
 import React, { useEffect, useState } from 'react'
 import { getBooks, getCategory } from 'services/api/book'
 import { Link, useParams, useLocation, useNavigate } from "react-router-dom";
+import DetailBook from './detail-book';
+import SearchEngine from 'components/search-engine';
 
 export default function Home() {
   const queryParams = new URLSearchParams(window.location.search);
@@ -11,6 +13,8 @@ export default function Home() {
 
   const [categoryData, setcategoryData] = useState([])
   const [bookData, setBookData] = useState([])
+  const [originalBookData, setoriginalBookData] = useState([])
+  const [searchKeyword, setsearchKeyword] = useState(null)
 
   const [categoryQuery, setcategoryQuery] = useState(idCategory ?? 1)
   const [page, setpage] = useState(queryParams.get("page") ? (parseInt(queryParams.get("page"))) : 0)
@@ -26,7 +30,7 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
-    console.log(idCategory)
+    // console.log(idCategory)
     setcategoryQuery(idCategory ?? 1)
 
     // console.log(Boolean(categoryData.length))
@@ -37,7 +41,7 @@ export default function Home() {
 
     }
   }, [location])
-  console.log(categoryQuery)
+  // console.log(categoryQuery)
 
 
   const retriveCategory = () => {
@@ -48,13 +52,44 @@ export default function Home() {
   }
 
   const retriveBook = () => {
-    getBooks({ categoryId: idCategory ?? 1, page: page, size: 10 }).then(res => {
-      setBookData(res.data)
-    })
-  }
+    let getBookFromLS = localStorage.getItem('books-data') ?? "[]"
+    let existingBook = JSON.parse(getBookFromLS)
+    const checkQueryCategory = idCategory ? parseInt(idCategory) : 1
+    const existingBooksInCategory = existingBook.find(x => ((x.categoryId === (checkQueryCategory)) && (x.page === page)))
 
-  const changeCategory = () => {
+    if(Boolean(existingBooksInCategory)){
+      setBookData(existingBooksInCategory?.books ?? [])
+            setoriginalBookData(existingBooksInCategory?.books ?? [])
+    } else {
+      getBooks({ categoryId: idCategory ?? 1, page: page, size: 10 }).then(res => {
 
+        let store = {
+          categoryId: checkQueryCategory,
+          page: page,
+          books: res.data
+        }
+  
+        if (Boolean(existingBook)) {
+          if (Boolean(existingBooksInCategory)) {
+            console.log("ada data yang sama")
+            setBookData(existingBooksInCategory?.books ?? [])
+            setoriginalBookData(existingBooksInCategory?.books ?? [])
+          } else {
+            localStorage.setItem(`books-data`, JSON.stringify([...existingBook, store]))
+            setBookData(res.data)
+            setoriginalBookData(res.data)
+          }
+  
+        } else {
+          localStorage.setItem(`books-data`, [store])
+          setBookData(res.data)
+          setoriginalBookData(res.data)
+        }
+  
+      })
+    }
+
+    
   }
 
   const previousPage = () => {
@@ -94,12 +129,34 @@ export default function Home() {
           }
         </div>
       </div>
-      <div class="grid gap-4 grid-cols-3 grid-rows-3">
+      <div className="flex justify-between items-center py-8">
+        <h1>Hasil untuk kategori {categoryData.find(x => x.id === (idCategory ? parseInt(idCategory) : 1))?.name}</h1>
+        <SearchEngine
+          category={idCategory ? parseInt(idCategory) : 1}
+          searched={(x) => {
+            setBookData(x.mergedArray)
+            console.log(x.keyword)
+            setsearchKeyword(x.keyword)
+          }}
+          canceled={() => {
+            setsearchKeyword(null)
+            setBookData(originalBookData)
+          }}
+        />
+      </div>
+      {
+        Boolean(searchKeyword) ? <div className="flex w-full items-center py-8">
+          <h1 className='mx-auto'>Hasil pencarian untuk "{searchKeyword}"</h1>
+        </div>
+          : null
+      }
+      <div className="grid gap-4 grid-cols-3 grid-rows-3">
         {
           bookData?.map((val, idx) => {
+            const fakeId = Math.random()
             return (
               <>
-                <label for="book-modal" class="modal-button">
+                <label for={`book-modal${val.id ?? fakeId}`} class="modal-button">
                   <BounceBox key={idx} delay={Math.round(idx * 10) / 100}>
                     <div className="bg-white gap-4 flex flex-col p-4 rounded-lg transition ease-in-out  hover:scale-105">
                       <div className="p-5 bg-gray-300 rounded-lg min-h-16">
@@ -120,14 +177,12 @@ export default function Home() {
                     </div>
                   </BounceBox>
                 </label>
-                <input type="checkbox" id="book-modal" class="modal-toggle" />
+                <input type="checkbox" id={`book-modal${val.id ?? fakeId}`} class="modal-toggle" />
                 <div class="modal">
                   <div class="modal-box w-11/12 max-w-5xl">
-                    <h3 class="font-bold text-lg">Congratulations random Interner user!</h3>
-                    <p class="py-4">You've been selected for a chance to get one year of subscription to use Wikipedia for free!</p>
-                    <div class="modal-action">
-                      <label for="book-modal" class="btn">Yay!</label>
-                    </div>
+                    <label for={`book-modal${val.id ?? fakeId}`} class="btn btn-sm btn-circle absolute right-2 top-2">✕</label>
+                    <h3 class="font-bold text-lg"></h3>
+                    <DetailBook data={val}/>
                   </div>
                 </div>
               </>
@@ -135,13 +190,15 @@ export default function Home() {
           })
         }
       </div>
-      <div className="flex mt-8 items-center justify-center">
-        <div class="btn-group">
-          <button onClick={() => { previousPage() }} class="btn">«</button>
-          <button class="btn">Page {parseInt(page) + 1}</button>
-          <button onClick={() => { nextPage() }} class="btn">»</button>
+      {
+        Boolean(searchKeyword) ? null : <div className="flex mt-8 items-center justify-center">
+          <div class="btn-group">
+            <button onClick={() => { previousPage() }} class="btn">«</button>
+            <button class="btn">Page {parseInt(page) + 1}</button>
+            <button onClick={() => { nextPage() }} class="btn">»</button>
+          </div>
         </div>
-      </div>
+      }
     </div>
   )
 }
